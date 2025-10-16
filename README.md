@@ -13,10 +13,10 @@ Im Taking a Break from Some of my Projects for now.
 
 ### Legacy Commands (prefix: !)
 
-- `!uziping` — Check if the bot is responsive
+- `!uziping` — Check if the bot is responsive (STILL ADDING BACK)
 - `!uzistatus` -Random Status Replys 
 - `!uzicmds` — Show available commands
-- `!updatecheck` -Checks for Updates
+- `!uziupdatecheck` -Checks for Updates
 
 ## Character Personalities
 
