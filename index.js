@@ -37,7 +37,7 @@ const commands = {
       logEvent(`User ${msg.author.tag} requested command list`);
     }
   },
-  status: {
+  uzistatus: {
     description: "Shows current bot status",
     execute: (msg) => {
       msg.reply(`Current status: ${serverModule.botSettings.statusMessage}`);
