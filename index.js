@@ -37,14 +37,14 @@ const commands = {
       logEvent(`User ${msg.author.tag} requested command list`);
     }
   },
-  uzistatus: {
+  status: {
     description: "Shows current bot status",
     execute: (msg) => {
       msg.reply(`Current status: ${serverModule.botSettings.statusMessage}`);
       logEvent(`User ${msg.author.tag} checked bot status`);
     }
   },
-  uziupdate: {
+  update: {
     description: "Updates bot status (for owner only)",
     execute: (msg, args) => {
       if (msg.author.id !== process.env.OWNER_ID) return msg.reply("You cannot use this command.");
