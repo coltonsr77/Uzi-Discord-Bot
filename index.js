@@ -29,7 +29,7 @@ function updateBotStatus() {
 
 // Commands
 const commands = {
-  cmds: {
+  uzicmds: {
     description: "Lists all commands",
     execute: (msg) => {
       const list = Object.keys(commands).map(cmd => `!${cmd} - ${commands[cmd].description}`).join("\n");
@@ -37,7 +37,7 @@ const commands = {
       logEvent(`User ${msg.author.tag} requested command list`);
     }
   },
-  status: {
+  uzistatus: {
     description: "Shows current bot status",
     execute: (msg) => {
       msg.reply(`Current status: ${serverModule.botSettings.statusMessage}`);
