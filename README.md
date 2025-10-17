@@ -11,10 +11,10 @@
 
 ### Slash Commands
 
-- `/uzistatus` -Checks the status of the bot
+- `/status` -Checks the status of the bot
 - `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
 - `/update` -Updates the status of the bot (OWNER ONLY)
-- `/uzicmds` — Show available commands
+- `/cmds` — Show available commands
 - `/updatecheck` -Checks for Updates
 
 ## Character Personalities
