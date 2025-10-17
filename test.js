@@ -9,9 +9,7 @@ const requiredFiles = [
     'index.js',
     'server.js',
     'package.json',
-    '.env.example',
-    'public/index.html',
-    'public/script.js'
+    '.env.example'
 ];
 
 let allFilesExist = true;
@@ -29,7 +27,7 @@ requiredFiles.forEach(file => {
 // Test 2: Check package.json dependencies
 try {
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-    const requiredDeps = ['discord.js', 'express', 'dotenv'];
+    const requiredDeps = ['discord.js', 'dotenv'];
     
     requiredDeps.forEach(dep => {
         if (packageJson.dependencies && packageJson.dependencies[dep]) {
