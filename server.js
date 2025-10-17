@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 // Bot settings accessible to index.js
 const botSettings = {
   statusMessage: "Online",
-  prefix: "!",
+  prefix: "/",
 };
 
 // Simple logs array
