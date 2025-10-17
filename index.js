@@ -1,27 +1,37 @@
 // --------------------
-// Load environment variables first
+// Load environment variables
 // --------------------
 require("dotenv").config();
-const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, Events, REST, Routes } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  SlashCommandBuilder,
+  Events,
+  REST,
+  Routes
+} = require("discord.js");
 const serverModule = require("./server.js");
 
 // --------------------
-// Environment variables
+// Environment Variables
 // --------------------
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const CLIENT_ID = process.env.CLIENT_ID; // Bot Application ID
+const CLIENT_ID = process.env.CLIENT_ID; // Your bot's Application ID
 const OWNER_ID = process.env.OWNER_ID;
 const GITHUB_REPO = process.env.GITHUB_REPO || "";
 
-// Validate essential env variables
+// Validate essentials
 if (!DISCORD_TOKEN) throw new Error("DISCORD_TOKEN is missing in .env");
 if (!CLIENT_ID) throw new Error("CLIENT_ID is missing in .env");
 if (!OWNER_ID) throw new Error("OWNER_ID is missing in .env");
 
 // --------------------
-// Create Discord client
+// Create Discord Client
 // --------------------
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds]
+});
 
 // Logging helper
 function logEvent(message) {
@@ -38,43 +48,55 @@ function updateBotStatus() {
 }
 
 // --------------------
-// Slash command setup
+// Slash Command Setup
 // --------------------
 client.commands = new Collection();
 
 const commandsData = [
-  new SlashCommandBuilder().setName("uzicmds").setDescription("Lists all commands"),
-  new SlashCommandBuilder().setName("uzistatus").setDescription("Shows current bot status"),
+  new SlashCommandBuilder()
+    .setName("uzicmds")
+    .setDescription("Lists all commands available for the bot."),
+  new SlashCommandBuilder()
+    .setName("uzistatus")
+    .setDescription("Shows the current bot status."),
   new SlashCommandBuilder()
     .setName("update")
-    .setDescription("Updates bot status (owner only)")
-    .addStringOption(option => option.setName("status").setDescription("New status text").setRequired(true)),
-  new SlashCommandBuilder().setName("updatecheck").setDescription("Checks latest GitHub release"),
-  new SlashCommandBuilder().setName("checkservers").setDescription("Lists all servers this bot is in (owner only)")
+    .setDescription("Updates the bot status (owner only).")
+    .addStringOption(option =>
+      option
+        .setName("status")
+        .setDescription("New status message for the bot.")
+        .setRequired(true)
+    ),
+  new SlashCommandBuilder()
+    .setName("updatecheck")
+    .setDescription("Checks the latest GitHub release for this bot."),
+  new SlashCommandBuilder()
+    .setName("checkservers")
+    .setDescription("Lists all servers this bot is in (owner only).")
 ];
 
-// Add to collection
 commandsData.forEach(cmd => client.commands.set(cmd.name, cmd));
 
 // --------------------
-// Register global commands
+// Register Global Commands
 // --------------------
 async function registerGlobalCommands() {
   const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
 
   try {
-    console.log(`Registering global slash commands with CLIENT_ID: ${CLIENT_ID}`);
+    console.log(`Registering ${commandsData.length} global commands...`);
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData.map(cmd => cmd.toJSON())
     });
-    console.log(`✅ Successfully registered ${commandsData.length} global commands.`);
+    console.log("✅ Global commands registered successfully!");
   } catch (err) {
     console.error("Error registering global commands:", err);
   }
 }
 
 // --------------------
-// Interaction handler
+// Interaction Handler
 // --------------------
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
@@ -84,46 +106,94 @@ client.on(Events.InteractionCreate, async interaction => {
 
   try {
     switch (interaction.commandName) {
-      case "cmds":
-        const list = Array.from(client.commands.keys()).map(c => `/${c}`).join("\n");
-        await interaction.reply({ content: `Available commands:\n${list}`, ephemeral: true });
+      // 🔹 List all commands
+      case "uzicmds": {
+        const list = Array.from(client.commands.keys())
+          .map(c => `/${c}`)
+          .join("\n");
+        await interaction.reply({
+          content: `📜 **Available Commands:**\n${list}`,
+          ephemeral: true
+        });
         logEvent(`User ${interaction.user.tag} requested command list`);
         break;
+      }
 
-      case "status":
-        await interaction.reply({ content: `Current status: ${serverModule.botSettings.statusMessage}`, ephemeral: true });
+      // 🔹 Show current status
+      case "uzistatus": {
+        const currentStatus = serverModule.botSettings.statusMessage || "Online";
+        await interaction.reply({
+          content: `🟢 **Current status:** ${currentStatus}`,
+          ephemeral: true
+        });
         logEvent(`User ${interaction.user.tag} checked bot status`);
         break;
+      }
 
-      case "update":
-        if (interaction.user.id !== OWNER_ID) return interaction.reply({ content: "You cannot use this command.", ephemeral: true });
+      // 🔹 Update bot status (Owner only)
+      case "update": {
+        if (interaction.user.id !== OWNER_ID) {
+          return interaction.reply({
+            content: "❌ You do not have permission to use this command.",
+            ephemeral: true
+          });
+        }
+
         const newStatus = interaction.options.getString("status");
         serverModule.botSettings.statusMessage = newStatus;
         updateBotStatus();
-        await interaction.reply({ content: `Status updated to: ${newStatus}`, ephemeral: true });
+        await interaction.reply({
+          content: `✅ Status updated to: ${newStatus}`,
+          ephemeral: true
+        });
         logEvent(`Owner updated status to: ${newStatus}`);
         break;
+      }
 
-      case "updatecheck":
-        if (!GITHUB_REPO) return interaction.reply({ content: "GitHub repo not set.", ephemeral: true });
+      // 🔹 Check GitHub release
+      case "updatecheck": {
+        if (!GITHUB_REPO) {
+          return interaction.reply({
+            content: "⚠️ GitHub repo not set in environment variables.",
+            ephemeral: true
+          });
+        }
+
         try {
           const fetch = (await import("node-fetch")).default;
           const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
           const data = await res.json();
+
           if (data && data.name) {
-            await interaction.reply({ content: `Latest release: **${data.name}** (${data.tag_name})`, ephemeral: true });
+            await interaction.reply({
+              content: `🚀 **Latest Release:** ${data.name} (${data.tag_name})`,
+              ephemeral: true
+            });
             logEvent(`User ${interaction.user.tag} checked for updates`);
           } else {
-            await interaction.reply({ content: "No release information found.", ephemeral: true });
+            await interaction.reply({
+              content: "No release information found on GitHub.",
+              ephemeral: true
+            });
           }
         } catch (err) {
-          await interaction.reply({ content: "Failed to fetch updates.", ephemeral: true });
+          await interaction.reply({
+            content: "❌ Failed to fetch updates.",
+            ephemeral: true
+          });
           logEvent(`Error fetching updates: ${err.message}`);
         }
         break;
+      }
 
-      case "checkservers":
-        if (interaction.user.id !== OWNER_ID) return interaction.reply({ content: "You cannot use this command.", ephemeral: true });
+      // 🔹 List servers (Owner only)
+      case "checkservers": {
+        if (interaction.user.id !== OWNER_ID) {
+          return interaction.reply({
+            content: "❌ You do not have permission to use this command.",
+            ephemeral: true
+          });
+        }
 
         const guilds = client.guilds.cache.map(g => ({
           name: g.name,
@@ -132,46 +202,66 @@ client.on(Events.InteractionCreate, async interaction => {
         }));
 
         if (guilds.length === 0) {
-          return interaction.reply({ content: "I'm not in any servers right now.", ephemeral: true });
+          return interaction.reply({
+            content: "I'm not in any servers currently.",
+            ephemeral: true
+          });
         }
 
-        const listServers = guilds.map(g => `• **${g.name}** (${g.id}) — ${g.members} members`).join("\n");
+        const listServers = guilds
+          .map(g => `• **${g.name}** (${g.id}) — ${g.members} members`)
+          .join("\n");
 
         try {
-          await interaction.user.send(`🤖 **Servers I'm in (${guilds.length}):**\n${listServers}`);
-          await interaction.reply({ content: "📬 I’ve sent you a DM with the server list.", ephemeral: true });
-          logEvent(`Owner ${interaction.user.tag} used /checkservers (sent via DM).`);
+          await interaction.user.send(
+            `🤖 **Servers I'm in (${guilds.length}):**\n${listServers}`
+          );
+          await interaction.reply({
+            content: "📬 I’ve sent you a DM with the server list.",
+            ephemeral: true
+          });
+          logEvent(`Owner ${interaction.user.tag} used /checkservers`);
         } catch (err) {
-          await interaction.reply({ content: "⚠️ I couldn't DM you — check your privacy settings.", ephemeral: true });
-          logEvent(`Failed to DM server list to owner: ${err.message}`);
+          await interaction.reply({
+            content: "⚠️ I couldn't DM you — check your privacy settings.",
+            ephemeral: true
+          });
+          logEvent(`Failed to DM server list: ${err.message}`);
         }
         break;
+      }
     }
   } catch (err) {
     console.error(err);
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: "Error executing command.", ephemeral: true });
+      await interaction.followUp({
+        content: "⚠️ Error executing command.",
+        ephemeral: true
+      });
     } else {
-      await interaction.reply({ content: "Error executing command.", ephemeral: true });
+      await interaction.reply({
+        content: "⚠️ Error executing command.",
+        ephemeral: true
+      });
     }
     logEvent(`Command error (${interaction.commandName}): ${err.message}`);
   }
 });
 
 // --------------------
-// Ready event
+// Ready Event
 // --------------------
 client.once(Events.ClientReady, async () => {
-  logEvent(`Bot logged in as ${client.user.tag}`);
+  logEvent(`✅ Bot logged in as ${client.user.tag}`);
   updateBotStatus();
   await registerGlobalCommands();
 });
 
 // --------------------
-// Start HTTP server and login
+// Start HTTP Server and Login
 // --------------------
 serverModule.startServer(() => {
-  logEvent("HTTP server started");
+  logEvent("🌐 HTTP server started");
   client.login(DISCORD_TOKEN);
 });
 
