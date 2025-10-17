@@ -1,17 +1,27 @@
+// --------------------
+// Load environment variables first
+// --------------------
 require("dotenv").config();
 const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, Events, REST, Routes } = require("discord.js");
 const serverModule = require("./server.js");
 
+// --------------------
 // Environment variables
+// --------------------
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "";
+const CLIENT_ID = process.env.CLIENT_ID; // Bot Application ID
 const OWNER_ID = process.env.OWNER_ID;
-const CLIENT_ID = process.env.CLIENT_ID; // Your bot application ID
+const GITHUB_REPO = process.env.GITHUB_REPO || "";
 
+// Validate essential env variables
+if (!DISCORD_TOKEN) throw new Error("DISCORD_TOKEN is missing in .env");
+if (!CLIENT_ID) throw new Error("CLIENT_ID is missing in .env");
+if (!OWNER_ID) throw new Error("OWNER_ID is missing in .env");
+
+// --------------------
 // Create Discord client
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
-});
+// --------------------
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // Logging helper
 function logEvent(message) {
@@ -27,12 +37,11 @@ function updateBotStatus() {
   logEvent(`Bot status set to: ${status}`);
 }
 
-// Collection for commands
+// --------------------
+// Slash command setup
+// --------------------
 client.commands = new Collection();
 
-// --------------------
-// Define Slash Commands
-// --------------------
 const commandsData = [
   new SlashCommandBuilder().setName("uzicmds").setDescription("Lists all commands"),
   new SlashCommandBuilder().setName("uzistatus").setDescription("Shows current bot status"),
@@ -48,25 +57,26 @@ const commandsData = [
 commandsData.forEach(cmd => client.commands.set(cmd.name, cmd));
 
 // --------------------
-// Global command registration
+// Register global commands
 // --------------------
 async function registerGlobalCommands() {
-  const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
+  const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
+
   try {
-    console.log('Registering global slash commands...');
+    console.log(`Registering global slash commands with CLIENT_ID: ${CLIENT_ID}`);
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData.map(cmd => cmd.toJSON())
     });
-    console.log('✅ Global slash commands registered!');
+    console.log(`✅ Successfully registered ${commandsData.length} global commands.`);
   } catch (err) {
-    console.error('Error registering global commands:', err);
+    console.error("Error registering global commands:", err);
   }
 }
 
 // --------------------
-// Interaction handling
+// Interaction handler
 // --------------------
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   const cmd = client.commands.get(interaction.commandName);
@@ -75,9 +85,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   try {
     switch (interaction.commandName) {
       case "uzicmds":
-        const list = Array.from(client.commands.keys())
-          .map(c => `/${c}`)
-          .join("\n");
+        const list = Array.from(client.commands.keys()).map(c => `/${c}`).join("\n");
         await interaction.reply({ content: `Available commands:\n${list}`, ephemeral: true });
         logEvent(`User ${interaction.user.tag} requested command list`);
         break;
@@ -127,16 +135,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
           return interaction.reply({ content: "I'm not in any servers right now.", ephemeral: true });
         }
 
-        const listServers = guilds
-          .map(g => `• **${g.name}** (${g.id}) — ${g.members} members`)
-          .join("\n");
+        const listServers = guilds.map(g => `• **${g.name}** (${g.id}) — ${g.members} members`).join("\n");
 
         try {
           await interaction.user.send(`🤖 **Servers I'm in (${guilds.length}):**\n${listServers}`);
           await interaction.reply({ content: "📬 I’ve sent you a DM with the server list.", ephemeral: true });
           logEvent(`Owner ${interaction.user.tag} used /checkservers (sent via DM).`);
         } catch (err) {
-          await interaction.reply({ content: "⚠️ I couldn't DM you — please check your privacy settings.", ephemeral: true });
+          await interaction.reply({ content: "⚠️ I couldn't DM you — check your privacy settings.", ephemeral: true });
           logEvent(`Failed to DM server list to owner: ${err.message}`);
         }
         break;
@@ -162,7 +168,7 @@ client.once(Events.ClientReady, async () => {
 });
 
 // --------------------
-// Start HTTP server and bot login
+// Start HTTP server and login
 // --------------------
 serverModule.startServer(() => {
   logEvent("HTTP server started");
