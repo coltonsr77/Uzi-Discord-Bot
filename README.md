@@ -13,8 +13,9 @@ Im Taking a Break from Some of my Projects for now.
 
 ### Slash Commands
 
+- `/uzistatus` -Checks the status of the bot
 - `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
-- `/update` -Random Status Replys (OWNER ONLY)
+- `/update` -Updates the status of the bot (OWNER ONLY)
 - `/uzicmds` — Show available commands
 - `/updatecheck` -Checks for Updates
 
@@ -31,7 +32,7 @@ To build my Discord bot, follow these steps:
    ```
 
 2. **Configure environment variables**
-   - Copy `.env.example` to `.env` and fill in your bot token and client ID and Gemini api key and The Github repo.
+   - Copy `.env.example` to `.env` and fill in your bot token, client ID, User ID, and github repo.
 
 
 3. **Run the bot**
@@ -42,7 +43,7 @@ To build my Discord bot, follow these steps:
 Your bot should now be running and ready to use!
 
 ## Contributing
-Feel free to submit issues or pull requests to improve the bot! and You Can Join the Discord Server:https://discord.gg/Rm4QAxfR
+Feel free to submit issues or pull requests to improve the bot! or You Can Join the Discord Server:https://discord.gg/Rm4QAxfR
 
 ## License
 MIT License - feel free to use and modify as needed.
