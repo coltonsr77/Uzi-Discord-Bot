@@ -1,22 +1,21 @@
 ## About the Bot
 
-Im Taking a Break from Some of my Projects for now.
-
-**Uzi-Discord-Bot** is a Discord bot inspired by the character Uzi Doorman from Murder Drones. The bot is designed for roleplay interactions, fun responses, and engaging Discord server members. It features legacy Commands, unique character personalities, and a simple setup process.
+**Uzi-Doorman-Bot** is a Discord bot inspired by the character Uzi Doorman from Murder Drones. The bot is designed for roleplay interactions, fun responses, and engaging Discord server members. It features slash Commands, unique character personalities, and a simple setup process.
 
 ## Key Features
 - Roleplay as Uzi Doorman with custom responses
-- Legacy (!prefix) Commands
+- Slash Commands 
 - Easy setup and configuration
-- (Optional) Web dashboard for bot status (may be experimental)
+- (Optional) Web dashboard for bot status and logs  (may be experimental)
 
 
-### Legacy Commands (prefix: !)
+### Slash Commands
 
-- `!uziping` — Check if the bot is responsive (STILL ADDING BACK)
-- `!uzistatus` -Random Status Replys 
-- `!uzicmds` — Show available commands
-- `!uziupdatecheck` -Checks for Updates
+- `/status` -Checks the status of the bot
+- `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
+- `/update` -Updates the status of the bot (OWNER ONLY)
+- `/cmds` — Show available commands
+- `/updatecheck` -Checks for Updates
 
 ## Character Personalities
 
@@ -31,7 +30,7 @@ To build my Discord bot, follow these steps:
    ```
 
 2. **Configure environment variables**
-   - Copy `.env.example` to `.env` and fill in your bot token and client ID and Gemini api key and The Github repo.
+   - Copy `.env.example` to `.env` and fill in your bot token, client ID, User ID, and github repo.
 
 
 3. **Run the bot**
@@ -41,8 +40,10 @@ To build my Discord bot, follow these steps:
 
 Your bot should now be running and ready to use!
 
+Make sure you use Node.js 25
+
 ## Contributing
-Feel free to submit issues or pull requests to improve the bot! and You Can Join the Discord Server:https://discord.gg/Rm4QAxfR
+Feel free to submit issues or pull requests to improve the bot! or You Can Join the Discord Server:https://discord.gg/Rm4QAxfR
 
 ## License
 MIT License - feel free to use and modify as needed.

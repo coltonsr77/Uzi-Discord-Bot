@@ -84,13 +84,13 @@ client.on(Events.InteractionCreate, async interaction => {
 
   try {
     switch (interaction.commandName) {
-      case "uzicmds":
+      case "cmds":
         const list = Array.from(client.commands.keys()).map(c => `/${c}`).join("\n");
         await interaction.reply({ content: `Available commands:\n${list}`, ephemeral: true });
         logEvent(`User ${interaction.user.tag} requested command list`);
         break;
 
-      case "uzistatus":
+      case "status":
         await interaction.reply({ content: `Current status: ${serverModule.botSettings.statusMessage}`, ephemeral: true });
         logEvent(`User ${interaction.user.tag} checked bot status`);
         break;

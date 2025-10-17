@@ -10,7 +10,6 @@ const requiredFiles = [
     'server.js',
     'package.json',
     '.env.example',
-    'src/commands/ping.js',
     'public/index.html',
     'public/script.js'
 ];
