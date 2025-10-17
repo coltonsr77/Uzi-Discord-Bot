@@ -48,6 +48,7 @@ jspm_packages/
 .idea/
 *.swp
 *.swo
+*.dockerfile
 
 # OS
 .DS_Store
