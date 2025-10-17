@@ -26,7 +26,7 @@ function saveSettings() {
 
 function getSettings(guildId) {
   if (!settings[guildId]) {
-    settings[guildId] = { botPrefix: "!", statusMessage: "Watching over the server" };
+    settings[guildId] = { botPrefix: "/", statusMessage: "Watching over the server" };
   }
   return settings[guildId];
 }
