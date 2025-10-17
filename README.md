@@ -6,12 +6,12 @@ Im Taking a Break from Some of my Projects for now.
 
 ## Key Features
 - Roleplay as Uzi Doorman with custom responses
-- Slash (/prefix) Commands 
+- Slash Commands 
 - Easy setup and configuration
 - (Optional) Web dashboard for bot status (may be experimental)
 
 
-### Slash Commands (prefix: /)
+### Slash Commands
 
 - `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
 - `/update` -Random Status Replys (OWNER ONLY)
