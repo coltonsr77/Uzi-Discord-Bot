@@ -1,5 +1,5 @@
 
-robertsonc2-stack/Uzi-Discord-Bot-Patchs2.0
+https://github.com/coltonsr77-debug/Uzi-Discord-Bot/tree/main
 
 ^^^^  We Will Update This Repo 
 
