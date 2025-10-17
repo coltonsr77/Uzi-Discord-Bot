@@ -6,7 +6,7 @@ Im Taking a Break from Some of my Projects for now.
 
 ## Key Features
 - Roleplay as Uzi Doorman with custom responses
-- Legacy (!prefix) Commands 
+- Slash (/prefix) Commands 
 - Easy setup and configuration
 - (Optional) Web dashboard for bot status (may be experimental)
 
