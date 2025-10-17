@@ -6,17 +6,17 @@ Im Taking a Break from Some of my Projects for now.
 
 ## Key Features
 - Roleplay as Uzi Doorman with custom responses
-- Legacy (!prefix) Commands
+- Legacy (!prefix) Commands 
 - Easy setup and configuration
 - (Optional) Web dashboard for bot status (may be experimental)
 
 
-### Legacy Commands (prefix: !)
+### Slash Commands (prefix: /)
 
-- `!uziping` — Check if the bot is responsive (STILL ADDING BACK)
-- `!uzistatus` -Random Status Replys 
-- `!uzicmds` — Show available commands
-- `!uziupdatecheck` -Checks for Updates
+- `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
+- `/update` -Random Status Replys (OWNER ONLY)
+- `/uzicmds` — Show available commands
+- `/updatecheck` -Checks for Updates
 
 ## Character Personalities
 
