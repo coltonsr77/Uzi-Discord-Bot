@@ -54,10 +54,10 @@ client.commands = new Collection();
 
 const commandsData = [
   new SlashCommandBuilder()
-    .setName("uzicmds")
+    .setName("cmds")
     .setDescription("Lists all commands available for the bot."),
   new SlashCommandBuilder()
-    .setName("uzistatus")
+    .setName("status")
     .setDescription("Shows the current bot status."),
   new SlashCommandBuilder()
     .setName("update")
@@ -107,7 +107,7 @@ client.on(Events.InteractionCreate, async interaction => {
   try {
     switch (interaction.commandName) {
       // 🔹 List all commands (visible to everyone)
-      case "uzicmds": {
+      case "cmds": {
         const list = Array.from(client.commands.keys())
           .map(c => `/${c}`)
           .join("\n");
@@ -120,7 +120,7 @@ client.on(Events.InteractionCreate, async interaction => {
       }
 
       // 🔹 Show current status (visible to everyone)
-      case "uzistatus": {
+      case "status": {
         const currentStatus = serverModule.botSettings.statusMessage || "Online";
         await interaction.reply({
           content: `🟢 **Current status:** ${currentStatus}`,
