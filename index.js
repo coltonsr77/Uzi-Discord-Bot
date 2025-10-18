@@ -11,7 +11,6 @@ const {
   REST,
   Routes
 } = require("discord.js");
-const serverModule = require("./server.js");
 
 // --------------------
 // Environment Variables
@@ -263,13 +262,3 @@ client.once(Events.ClientReady, async () => {
   updateBotStatus();
   await registerGlobalCommands();
 });
-
-// --------------------
-// Start HTTP Server and Login
-// --------------------
-serverModule.startServer(() => {
-  logEvent("🌐 HTTP server started");
-  client.login(DISCORD_TOKEN);
-});
-
-module.exports = client;
