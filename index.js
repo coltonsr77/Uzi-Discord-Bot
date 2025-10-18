@@ -106,31 +106,31 @@ client.on(Events.InteractionCreate, async interaction => {
 
   try {
     switch (interaction.commandName) {
-      // 🔹 List all commands
+      // 🔹 List all commands (visible to everyone)
       case "uzicmds": {
         const list = Array.from(client.commands.keys())
           .map(c => `/${c}`)
           .join("\n");
         await interaction.reply({
           content: `📜 **Available Commands:**\n${list}`,
-          ephemeral: true
+          ephemeral: false // everyone can see
         });
         logEvent(`User ${interaction.user.tag} requested command list`);
         break;
       }
 
-      // 🔹 Show current status
+      // 🔹 Show current status (visible to everyone)
       case "uzistatus": {
         const currentStatus = serverModule.botSettings.statusMessage || "Online";
         await interaction.reply({
           content: `🟢 **Current status:** ${currentStatus}`,
-          ephemeral: true
+          ephemeral: false // everyone can see
         });
         logEvent(`User ${interaction.user.tag} checked bot status`);
         break;
       }
 
-      // 🔹 Update bot status (Owner only)
+      // 🔹 Update bot status (Owner only, private)
       case "update": {
         if (interaction.user.id !== OWNER_ID) {
           return interaction.reply({
@@ -150,8 +150,15 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       }
 
-      // 🔹 Check GitHub release
+      // 🔹 Check GitHub release (Owner only, private)
       case "updatecheck": {
+        if (interaction.user.id !== OWNER_ID) {
+          return interaction.reply({
+            content: "❌ You do not have permission to use this command.",
+            ephemeral: true
+          });
+        }
+
         if (!GITHUB_REPO) {
           return interaction.reply({
             content: "⚠️ GitHub repo not set in environment variables.",
@@ -186,7 +193,7 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       }
 
-      // 🔹 List servers (Owner only)
+      // 🔹 List servers (Owner only, private)
       case "checkservers": {
         if (interaction.user.id !== OWNER_ID) {
           return interaction.reply({
