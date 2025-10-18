@@ -4,7 +4,7 @@
 
 ## Key Features
 - Roleplay as Uzi Doorman with custom responses
-- Slash Commands 
+- Slash Commands
 - Easy setup and configuration
 - (Optional) Web dashboard for bot status and logs  (may be experimental)
 
