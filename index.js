@@ -58,7 +58,7 @@ async function registerGlobalCommands() {
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData.map(cmd => cmd.toJSON()),
     });
-    console.log("✅ Global slash commands registered!");
+    console.log(" Global slash commands registered!");
   } catch (err) {
     console.error("Error registering global commands:", err);
   }
@@ -142,12 +142,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .join("\n");
 
         try {
-          await interaction.user.send(`🤖 **Servers I'm in (${guilds.length}):**\n${listServers}`);
-          await interaction.reply({ content: "📬 I’ve sent you a DM with the server list.", ephemeral: true });
+          await interaction.user.send( **Servers I'm in (${guilds.length}):**\n${listServers}`);
+          await interaction.reply({ content: " I’ve sent you a DM with the server list.", ephemeral: true });
           logEvent(`Owner ${interaction.user.tag} used /checkservers`);
         } catch (err) {
           await interaction.reply({
-            content: "⚠️ I couldn't DM you — please check your privacy settings.",
+            content: " I couldn't DM you — please check your privacy settings.",
             ephemeral: true,
           });
           logEvent(`Failed to DM server list: ${err.message}`);
