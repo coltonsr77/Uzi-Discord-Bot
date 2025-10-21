@@ -9,8 +9,7 @@ const requiredFiles = [
     'index.js',
     'server.js',
     'package.json',
-    '.env',
-    'server.js'
+    '.env'
 ];
 
 let allFilesExist = true;
