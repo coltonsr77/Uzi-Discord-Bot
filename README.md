@@ -14,7 +14,7 @@
 - `/status` -Checks the status of the bot
 - `/uziping` — Check if the bot is responsive (STILL ADDING BACK)
 - `/update` -Updates the status of the bot (OWNER ONLY)
-- `/cmds` — Show available commands
+- `/commands` — Show available commands
 - `/updatecheck` -Checks for Updates
 
 ## Character Personalities

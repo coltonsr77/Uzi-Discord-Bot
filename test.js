@@ -10,7 +10,7 @@ const requiredFiles = [
     'server.js',
     'package.json',
     '.env',
-    'server.js'
+    'updates.js'
 ];
 
 let allFilesExist = true;
