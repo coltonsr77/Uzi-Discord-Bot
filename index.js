@@ -1,33 +1,39 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits, Collection, SlashCommandBuilder, Events, REST, Routes } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  SlashCommandBuilder,
+  Events,
+  REST,
+  Routes
+} = require("discord.js");
 
 // Environment variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "";
 const OWNER_ID = process.env.OWNER_ID;
-const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_ID = process.env.CLIENT_ID; // Bot application ID
 
 // Create Discord client
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds]
 });
 
-// Simple logging helper
+// Simple logger
 function logEvent(message) {
   console.log(`[LOG] ${message}`);
 }
 
-// Bot status (in-memory only)
-let botStatus = "Online";
-
 // Update bot status
 function updateBotStatus() {
   if (!client.user) return;
-  client.user.setActivity(botStatus, { type: "WATCHING" });
-  logEvent(`Bot status set to: ${botStatus}`);
+  const status = "Online";
+  client.user.setActivity(status, { type: "WATCHING" });
+  logEvent(`Bot status set to: ${status}`);
 }
 
-// Slash command collection
+// Collection for slash commands
 client.commands = new Collection();
 
 // --------------------
@@ -43,22 +49,25 @@ const commandsData = [
       option.setName("status").setDescription("New status text").setRequired(true)
     ),
   new SlashCommandBuilder().setName("updatecheck").setDescription("Checks latest GitHub release"),
-  new SlashCommandBuilder().setName("checkservers").setDescription("Lists all servers this bot is in (owner only)"),
+  new SlashCommandBuilder()
+    .setName("checkservers")
+    .setDescription("Lists all servers this bot is in (owner only)")
 ];
 
+// Add to collection
 commandsData.forEach(cmd => client.commands.set(cmd.name, cmd));
 
 // --------------------
-// Register global slash commands
+// Global command registration
 // --------------------
 async function registerGlobalCommands() {
   const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
   try {
     console.log("Registering global slash commands...");
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
-      body: commandsData.map(cmd => cmd.toJSON()),
+      body: commandsData.map(cmd => cmd.toJSON())
     });
-    console.log(" Global slash commands registered!");
+    console.log("✅ Global slash commands registered!");
   } catch (err) {
     console.error("Error registering global commands:", err);
   }
@@ -67,7 +76,7 @@ async function registerGlobalCommands() {
 // --------------------
 // Interaction handling
 // --------------------
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   const cmd = client.commands.get(interaction.commandName);
@@ -75,66 +84,97 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   try {
     switch (interaction.commandName) {
-      case "commands": {
+      case "uzicmds": {
         const list = Array.from(client.commands.keys())
           .map(c => `/${c}`)
           .join("\n");
-        await interaction.reply({ content: `Available commands:\n${list}`, ephemeral: true });
+        await interaction.reply({
+          content: `Available commands:\n${list}`,
+          ephemeral: true
+        });
         logEvent(`User ${interaction.user.tag} requested command list`);
         break;
       }
 
-      case "status":
-        await interaction.reply({ content: `Current status: ${botStatus}`, ephemeral: true });
+      case "uzistatus": {
+        await interaction.reply({
+          content: `Current status: Online`,
+          ephemeral: true
+        });
         logEvent(`User ${interaction.user.tag} checked bot status`);
         break;
+      }
 
-      case "update":
+      case "update": {
         if (interaction.user.id !== OWNER_ID)
-          return interaction.reply({ content: "You cannot use this command.", ephemeral: true });
+          return interaction.reply({
+            content: "❌ You cannot use this command.",
+            ephemeral: true
+          });
 
         const newStatus = interaction.options.getString("status");
-        botStatus = newStatus;
-        updateBotStatus();
-        await interaction.reply({ content: `Status updated to: ${newStatus}`, ephemeral: true });
+        client.user.setActivity(newStatus, { type: "WATCHING" });
+        await interaction.reply({
+          content: `✅ Status updated to: ${newStatus}`,
+          ephemeral: true
+        });
         logEvent(`Owner updated status to: ${newStatus}`);
         break;
+      }
 
-      case "updatecheck":
+      case "updatecheck": {
         if (!GITHUB_REPO)
-          return interaction.reply({ content: "GitHub repo not set.", ephemeral: true });
+          return interaction.reply({
+            content: "GitHub repo not set.",
+            ephemeral: true
+          });
 
         try {
           const fetch = (await import("node-fetch")).default;
-          const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`);
+          const res = await fetch(
+            `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
+          );
           const data = await res.json();
           if (data && data.name) {
             await interaction.reply({
               content: `Latest release: **${data.name}** (${data.tag_name})`,
-              ephemeral: true,
+              ephemeral: true
             });
             logEvent(`User ${interaction.user.tag} checked for updates`);
           } else {
-            await interaction.reply({ content: "No release information found.", ephemeral: true });
+            await interaction.reply({
+              content: "No release information found.",
+              ephemeral: true
+            });
           }
         } catch (err) {
-          await interaction.reply({ content: "Failed to fetch updates.", ephemeral: true });
+          await interaction.reply({
+            content: "Failed to fetch updates.",
+            ephemeral: true
+          });
           logEvent(`Error fetching updates: ${err.message}`);
         }
         break;
+      }
 
-      case "checkservers":
+      case "checkservers": {
         if (interaction.user.id !== OWNER_ID)
-          return interaction.reply({ content: "You cannot use this command.", ephemeral: true });
+          return interaction.reply({
+            content: "❌ You cannot use this command.",
+            ephemeral: true
+          });
 
         const guilds = client.guilds.cache.map(g => ({
           name: g.name,
           id: g.id,
-          members: g.memberCount ?? "Unknown",
+          members: g.memberCount ?? "Unknown"
         }));
 
         if (guilds.length === 0) {
-          return interaction.reply({ content: "I'm not in any servers right now.", ephemeral: true });
+          return interaction.reply({
+            content: "I'm not in any servers right now.",
+            ephemeral: true
+          });
         }
 
         const listServers = guilds
@@ -142,31 +182,46 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .join("\n");
 
         try {
-          await interaction.user.send( **Servers I'm in (${guilds.length}):**\n${listServers}`);
-          await interaction.reply({ content: " I’ve sent you a DM with the server list.", ephemeral: true });
-          logEvent(`Owner ${interaction.user.tag} used /checkservers`);
+          await interaction.user.send(
+            `**Servers I'm in (${guilds.length}):**\n${listServers}`
+          );
+          await interaction.reply({
+            content: "📬 I’ve sent you a DM with the server list.",
+            ephemeral: true
+          });
+          logEvent(
+            `Owner ${interaction.user.tag} used /checkservers (sent via DM).`
+          );
         } catch (err) {
           await interaction.reply({
-            content: " I couldn't DM you — please check your privacy settings.",
-            ephemeral: true,
+            content:
+              "⚠️ I couldn't DM you — please check your privacy settings.",
+            ephemeral: true
           });
           logEvent(`Failed to DM server list: ${err.message}`);
         }
         break;
+      }
     }
   } catch (err) {
     console.error(err);
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: "Error executing command.", ephemeral: true });
+      await interaction.followUp({
+        content: "Error executing command.",
+        ephemeral: true
+      });
     } else {
-      await interaction.reply({ content: "Error executing command.", ephemeral: true });
+      await interaction.reply({
+        content: "Error executing command.",
+        ephemeral: true
+      });
     }
     logEvent(`Command error (${interaction.commandName}): ${err.message}`);
   }
 });
 
 // --------------------
-// Bot Ready Event
+// Ready event
 // --------------------
 client.once(Events.ClientReady, async () => {
   logEvent(`Bot logged in as ${client.user.tag}`);
@@ -175,8 +230,6 @@ client.once(Events.ClientReady, async () => {
 });
 
 // --------------------
-// Start Bot
+// Bot login
 // --------------------
 client.login(DISCORD_TOKEN);
-
-module.exports = client;
