@@ -84,7 +84,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
   try {
     switch (interaction.commandName) {
-      case "uzicmds": {
+      case "commands": {
         const list = Array.from(client.commands.keys())
           .map(c => `/${c}`)
           .join("\n");
@@ -96,7 +96,7 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       }
 
-      case "uzistatus": {
+      case "status": {
         await interaction.reply({
           content: `Current status: Online`,
           ephemeral: true
