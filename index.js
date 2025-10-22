@@ -40,8 +40,8 @@ client.commands = new Collection();
 // Define Slash Commands
 // --------------------
 const commandsData = [
-  new SlashCommandBuilder().setName("uzicmds").setDescription("Lists all commands"),
-  new SlashCommandBuilder().setName("uzistatus").setDescription("Shows current bot status"),
+  new SlashCommandBuilder().setName("commands").setDescription("Lists all commands"),
+  new SlashCommandBuilder().setName("status").setDescription("Shows current bot status"),
   new SlashCommandBuilder()
     .setName("update")
     .setDescription("Updates bot status (owner only)")
