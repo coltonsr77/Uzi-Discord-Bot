@@ -9,7 +9,7 @@ This bot uses discord.js to register and handle global slash commands. Commands 
 ## Requirements
 
 - Node.js (v16.9.0+ recommended for discord.js v14 compatibility)
-- npm or yarn
+- npm
 - A Discord bot application with:
   - Bot token
   - Application (client) ID
@@ -22,7 +22,7 @@ Dependencies used by the project (install via npm):
 
 Example:
 ```bash
-npm install discord.js dotenv node-fetch
+npm install
 ```
 
 ## Environment variables
@@ -55,14 +55,14 @@ Because commands are registered globally, it may take up to an hour to appear in
 
 All commands are registered as global slash commands. By default, replies are ephemeral.
 
-1. /uzicmds
+1. /commands
    - Description: Lists all commands.
-   - Usage: `/uzicmds`
+   - Usage: `/commands`
    - Behavior: Sends an ephemeral reply to the user listing every registered command, e.g.:
      ```
      Available commands:
-     /uzicmds
-     /uzistatus
+     /commands
+     /status
      /update
      /updatecheck
      /checkservers
