@@ -136,4 +136,4 @@ All commands are registered as global slash commands. By default, replies are ep
 
 ## Contact / Contributing
 
-If you want changes to how commands behave or additions in the README, open an issue or PR in the repository. If you'd like, I can push this README to the repo or open a PR for you.
+If you want changes to how commands behave or additions in the README, open an issue or PR in the repository.
