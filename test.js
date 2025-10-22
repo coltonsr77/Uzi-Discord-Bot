@@ -10,7 +10,8 @@ const requiredFiles = [
     'server.js',
     'package.json',
     '.env',
-    'updates.js'
+    'updates.js',
+    'package-lock.json'
 ];
 
 let allFilesExist = true;
