@@ -7,7 +7,7 @@ const path = require('path');
 
 const requiredFiles = [
     'index.js',
-    'server.js',
+    'test_token.js',
     'package.json',
     '.env',
     'updates.js',
