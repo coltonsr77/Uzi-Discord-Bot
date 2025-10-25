@@ -27,7 +27,7 @@ requiredFiles.forEach(file => {
 // Test 2: Check package.json dependencies
 try {
     const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-    const requiredDeps = ['discord.js', 'dotenv', 'node-fetch'];
+    const requiredDeps = ['discord.js', 'dotenv', 'node-fetch', 'axios'];
     
     requiredDeps.forEach(dep => {
         if (packageJson.dependencies && packageJson.dependencies[dep]) {
