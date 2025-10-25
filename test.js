@@ -9,7 +9,6 @@ const requiredFiles = [
     'index.js',
     'package.json',
     '.env',
-    'updates.js',
     'package-lock.json'
 ];
 
