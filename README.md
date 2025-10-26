@@ -11,8 +11,8 @@ Uzi-Doorman-Bot is a small, focused Discord bot that role-plays as Uzi Doorman (
 ## Slash Commands
 These commands are implemented and registered by index.js on startup:
 
-- `/uzicmds` — Lists all available bot commands (ephemeral reply)
-- `/uzistatus` — Shows the current bot status (ephemeral reply)
+- `/commands` — Lists all available bot commands (ephemeral reply)
+- `/status` — Shows the current bot status (ephemeral reply)
 - `/update` — Owner-only. Updates the bot status. Usage: `/update status:<text>`
 - `/updatecheck` — Checks the latest GitHub release for the repository configured in GITHUB_REPO (ephemeral reply)
 - `/checkservers` — Owner-only. Sends the owner a DM listing all servers the bot is in
