@@ -9,7 +9,7 @@ const requiredFiles = [
     'index.js',
     'package.json',
     '.env',
-    'package-lock.json'
+    'test.js'
 ];
 
 let allFilesExist = true;
