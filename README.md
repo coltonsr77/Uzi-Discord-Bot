@@ -67,7 +67,7 @@ On startup the bot will:
 - Set the initial activity to "Online" and log startup events to the console
 
 ## Requirements
-- Node.js 18+ (recommended). The code uses dynamic import and modern APIs that work reliably on Node 18 and newer.
+- Node.js 22+ (recommended). The code uses dynamic import and modern APIs that work reliably on Node 18 and newer.
 
 ## Behavior Details / Implementation Notes
 - The bot uses discord.js and registers global slash commands using REST + Routes.applicationCommands(CLIENT_ID).
