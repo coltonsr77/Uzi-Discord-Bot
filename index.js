@@ -6,19 +6,40 @@ const {
   SlashCommandBuilder,
   Events,
   REST,
-  Routes
+  Routes,
+  EmbedBuilder
 } = require("discord.js");
+const { execSync } = require("child_process");
+const path = require("path");
 
+// --------------------
+// Run test.js on startup
+// --------------------
+try {
+  console.log("🧩 Running test.js to verify dependencies...");
+  const testScriptPath = path.join(__dirname, "test.js");
+  execSync(`node "${testScriptPath}"`, { stdio: "inherit" });
+  console.log("✅ test.js executed successfully.\n");
+} catch (err) {
+  console.error("❌ Error running test.js:", err.message);
+}
+
+// --------------------
 // Environment variables
+// --------------------
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "";
 const OWNER_ID = process.env.OWNER_ID;
 const CLIENT_ID = process.env.CLIENT_ID; // Bot application ID
 
-// Create Discord client
+// --------------------
+// Discord client
+// --------------------
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
+
+client.commands = new Collection();
 
 // Simple logger
 function logEvent(message) {
@@ -33,15 +54,12 @@ function updateBotStatus() {
   logEvent(`Bot status set to: ${status}`);
 }
 
-// Collection for slash commands
-client.commands = new Collection();
-
 // --------------------
-// Define Slash Commands
+// Slash Commands
 // --------------------
 const commandsData = [
-  new SlashCommandBuilder().setName("commands").setDescription("Lists all commands"),
-  new SlashCommandBuilder().setName("status").setDescription("Shows current bot status"),
+  new SlashCommandBuilder().setName("uzicmds").setDescription("Lists all commands"),
+  new SlashCommandBuilder().setName("uzistatus").setDescription("Shows current bot status"),
   new SlashCommandBuilder()
     .setName("update")
     .setDescription("Updates bot status (owner only)")
@@ -51,14 +69,16 @@ const commandsData = [
   new SlashCommandBuilder().setName("updatecheck").setDescription("Checks latest GitHub release"),
   new SlashCommandBuilder()
     .setName("checkservers")
-    .setDescription("Lists all servers this bot is in (owner only)")
+    .setDescription("Lists all servers this bot is in (owner only)"),
+  new SlashCommandBuilder()
+    .setName("changelog")
+    .setDescription("Displays recent commits/changelog from GitHub")
 ];
 
-// Add to collection
 commandsData.forEach(cmd => client.commands.set(cmd.name, cmd));
 
 // --------------------
-// Global command registration
+// Register Global Commands
 // --------------------
 async function registerGlobalCommands() {
   const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
@@ -136,10 +156,13 @@ client.on(Events.InteractionCreate, async interaction => {
           );
           const data = await res.json();
           if (data && data.name) {
-            await interaction.reply({
-              content: `Latest release: **${data.name}** (${data.tag_name})`,
-              ephemeral: true
-            });
+            const embed = new EmbedBuilder()
+              .setTitle(`🚀 Latest Release: ${data.name}`)
+              .setDescription(`Tag: **${data.tag_name}**`)
+              .setURL(data.html_url)
+              .setColor(0x2ecc71)
+              .setFooter({ text: `Repo: ${GITHUB_REPO}` });
+            await interaction.reply({ embeds: [embed], ephemeral: true });
             logEvent(`User ${interaction.user.tag} checked for updates`);
           } else {
             await interaction.reply({
@@ -189,16 +212,62 @@ client.on(Events.InteractionCreate, async interaction => {
             content: "📬 I’ve sent you a DM with the server list.",
             ephemeral: true
           });
-          logEvent(
-            `Owner ${interaction.user.tag} used /checkservers (sent via DM).`
-          );
+          logEvent(`Owner ${interaction.user.tag} used /checkservers`);
         } catch (err) {
           await interaction.reply({
-            content:
-              "⚠️ I couldn't DM you — please check your privacy settings.",
+            content: "⚠️ I couldn't DM you — check privacy settings.",
             ephemeral: true
           });
           logEvent(`Failed to DM server list: ${err.message}`);
+        }
+        break;
+      }
+
+      case "changelog": {
+        if (!GITHUB_REPO)
+          return interaction.reply({
+            content: "❌ GitHub repo not set in environment variables.",
+            ephemeral: true
+          });
+
+        try {
+          const fetch = (await import("node-fetch")).default;
+          const res = await fetch(
+            `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=5`
+          );
+          const commits = await res.json();
+
+          if (!Array.isArray(commits)) {
+            await interaction.reply({
+              content: "⚠️ Unable to fetch changelog data.",
+              ephemeral: true
+            });
+            return;
+          }
+
+          const embed = new EmbedBuilder()
+            .setTitle(`📝 Latest Commits from ${GITHUB_REPO}`)
+            .setColor(0x7289da)
+            .setFooter({ text: "Powered by GitHub API" })
+            .setTimestamp();
+
+          for (const commit of commits) {
+            embed.addFields({
+              name: commit.commit.message.split("\n")[0],
+              value: `👤 ${commit.commit.author.name}\n🕒 ${new Date(
+                commit.commit.author.date
+              ).toLocaleString()}\n[🔗 View Commit](${commit.html_url})`
+            });
+          }
+
+          await interaction.reply({ embeds: [embed], ephemeral: true });
+          logEvent(`User ${interaction.user.tag} viewed changelog`);
+        } catch (err) {
+          console.error("Error fetching commits:", err);
+          await interaction.reply({
+            content: "❌ Failed to fetch changelog.",
+            ephemeral: true
+          });
         }
         break;
       }
