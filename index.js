@@ -16,12 +16,12 @@ const path = require("path");
 // Run test.js on startup
 // --------------------
 try {
-  console.log("🧩 Running test.js to verify dependencies...");
+  console.log("Running test.js to verify dependencies...");
   const testScriptPath = path.join(__dirname, "test.js");
   execSync(`node "${testScriptPath}"`, { stdio: "inherit" });
-  console.log("✅ test.js executed successfully.\n");
+  console.log("test.js executed successfully.\n");
 } catch (err) {
-  console.error("❌ Error running test.js:", err.message);
+  console.error("Error running test.js:", err.message);
 }
 
 // --------------------
@@ -87,7 +87,7 @@ async function registerGlobalCommands() {
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData.map(cmd => cmd.toJSON())
     });
-    console.log("✅ Global slash commands registered!");
+    console.log("Global slash commands registered!");
   } catch (err) {
     console.error("Error registering global commands:", err);
   }
@@ -128,14 +128,14 @@ client.on(Events.InteractionCreate, async interaction => {
       case "update": {
         if (interaction.user.id !== OWNER_ID)
           return interaction.reply({
-            content: "❌ You cannot use this command.",
+            content: "You cannot use this command.",
             ephemeral: true
           });
 
         const newStatus = interaction.options.getString("status");
         client.user.setActivity(newStatus, { type: "WATCHING" });
         await interaction.reply({
-          content: `✅ Status updated to: ${newStatus}`,
+          content: `Status updated to: ${newStatus}`,
           ephemeral: true
         });
         logEvent(`Owner updated status to: ${newStatus}`);
@@ -157,7 +157,7 @@ client.on(Events.InteractionCreate, async interaction => {
           const data = await res.json();
           if (data && data.name) {
             const embed = new EmbedBuilder()
-              .setTitle(`🚀 Latest Release: ${data.name}`)
+              .setTitle(`Latest Release: ${data.name}`)
               .setDescription(`Tag: **${data.tag_name}**`)
               .setURL(data.html_url)
               .setColor(0x2ecc71)
@@ -183,7 +183,7 @@ client.on(Events.InteractionCreate, async interaction => {
       case "checkservers": {
         if (interaction.user.id !== OWNER_ID)
           return interaction.reply({
-            content: "❌ You cannot use this command.",
+            content: "You cannot use this command.",
             ephemeral: true
           });
 
@@ -209,13 +209,13 @@ client.on(Events.InteractionCreate, async interaction => {
             `**Servers I'm in (${guilds.length}):**\n${listServers}`
           );
           await interaction.reply({
-            content: "📬 I’ve sent you a DM with the server list.",
+            content: "I’ve sent you a DM with the server list.",
             ephemeral: true
           });
           logEvent(`Owner ${interaction.user.tag} used /checkservers`);
         } catch (err) {
           await interaction.reply({
-            content: "⚠️ I couldn't DM you — check privacy settings.",
+            content: "I couldn't DM you — check privacy settings.",
             ephemeral: true
           });
           logEvent(`Failed to DM server list: ${err.message}`);
@@ -226,7 +226,7 @@ client.on(Events.InteractionCreate, async interaction => {
       case "changelog": {
         if (!GITHUB_REPO)
           return interaction.reply({
-            content: "❌ GitHub repo not set in environment variables.",
+            content: "GitHub repo not set in environment variables.",
             ephemeral: true
           });
 
@@ -239,14 +239,14 @@ client.on(Events.InteractionCreate, async interaction => {
 
           if (!Array.isArray(commits)) {
             await interaction.reply({
-              content: "⚠️ Unable to fetch changelog data.",
+              content: "Unable to fetch changelog data.",
               ephemeral: true
             });
             return;
           }
 
           const embed = new EmbedBuilder()
-            .setTitle(`📝 Latest Commits from ${GITHUB_REPO}`)
+            .setTitle(`Latest Commits from ${GITHUB_REPO}`)
             .setColor(0x7289da)
             .setFooter({ text: "Powered by GitHub API" })
             .setTimestamp();
@@ -265,7 +265,7 @@ client.on(Events.InteractionCreate, async interaction => {
         } catch (err) {
           console.error("Error fetching commits:", err);
           await interaction.reply({
-            content: "❌ Failed to fetch changelog.",
+            content: "Failed to fetch changelog.",
             ephemeral: true
           });
         }
