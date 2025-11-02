@@ -11,7 +11,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
-    .setDescription("Talk to the bot as Uzi Doorman")
+    .setDescription("Talk to Uzi Doorman")
     .addStringOption(option =>
       option.setName("message")
         .setDescription("Your message to Uzi")
@@ -40,11 +40,13 @@ client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "roleplay") {
-    const userMsg = interaction.options.getString("message");
-    await interaction.deferReply(); // allow time for Gemini
+    const userMessage = interaction.options.getString("message");
 
-    const reply = await askUzi(interaction.user.id, userMsg);
-    await interaction.editReply(reply);
+    await interaction.deferReply(); // gives time for Gemini
+    const uziReply = await askUzi(userMessage);
+
+    // Reply with Gemini text only
+    await interaction.editReply(uziReply);
   }
 });
 
