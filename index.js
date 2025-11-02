@@ -7,7 +7,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-// Slash command definition
+// Slash command
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
@@ -35,14 +35,15 @@ client.once(Events.ClientReady, async () => {
   await registerCommands();
 });
 
-// Interaction handling
+// Interaction
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "roleplay") {
     const userMsg = interaction.options.getString("message");
     await interaction.deferReply(); // allow time for Gemini
-    const reply = await askUzi(userMsg);
+
+    const reply = await askUzi(interaction.user.id, userMsg);
     await interaction.editReply(reply);
   }
 });
