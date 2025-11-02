@@ -2,22 +2,22 @@ const axios = require("axios");
 require("dotenv").config();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-2.5-flash"; // Your model
 
-async function askUzi(prompt) {
+async function askUzi(userMessage) {
   const body = {
-    contents: {
-      role: "user",
-      parts: {
-        text: `Respond as a sarcastic, edgy AI in the style of Uzi Doorman from Murder Drones. User says: "${prompt}"`
+    model: MODEL,
+    contents: [
+      {
+        role: "user",
+        text: `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and in a snarky, edgy tone. Respond to the following message from a human: "${userMessage}"`
       }
-    },
-    model: MODEL
+    ]
   };
 
   try {
-    const resp = await axios.post(
-      `https://generativelanguage.googleapis.com/v1/models/${MODEL}:generateContent`,
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
       body,
       {
         headers: {
@@ -26,11 +26,12 @@ async function askUzi(prompt) {
         }
       }
     );
-    const text = resp.data?.candidates?.[0]?.content?.parts?.text;
-    return text || "I have nothing to say.";
+
+    const text = response.data?.candidates?.[0]?.content?.[0]?.text;
+    return text || "Ugh… I have nothing to say.";
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Something broke. Not my fault.";
+    return "Ugh… something broke. Not my problem.";
   }
 }
 
