@@ -1,12 +1,10 @@
 # Uzi-Doorman-Bot
 
-Uzi-Doorman-Bot is a small, focused Discord bot that role-plays as Uzi Doorman (from Murder Drones) and provides a few useful owner/admin utilities. This README was updated to match the behavior and commands implemented in index.js.
+Uzi-Doorman-Bot is a small, focused Discord bot that role-plays as Uzi Doorman (from Murder Drones).
 
 ## Key Features
 - Roleplay responses inspired by Uzi Doorman
 - Slash commands (registered globally on startup)
-- Owner-only utilities for updating status and listing servers
-- Optional GitHub release check (requires GITHUB_REPO)
 
 ## Slash Commands
 These commands are implemented and registered by index.js on startup:
