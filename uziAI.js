@@ -7,22 +7,10 @@ const GEMINI_MODEL = "gemini-2.5-flash";
 async function askUzi(userMessage) {
   const requestBody = {
     model: GEMINI_MODEL,
+    input: `Respond as a sarcastic, edgy, rebellious AI in the style of Uzi Doorman from Murder Drones.
+User says: "${userMessage}"`,
     temperature: 0.7,
-    candidateCount: 1,
-    prompt: {
-      messages: [
-        {
-          author: "user",
-          content: [
-            {
-              type: "text",
-              text: `Respond as a sarcastic, edgy, rebellious AI in the style of Uzi Doorman from Murder Drones.
-User says: "${userMessage}"`
-            }
-          ]
-        }
-      ]
-    }
+    candidateCount: 1
   };
 
   try {
@@ -37,7 +25,7 @@ User says: "${userMessage}"`
       }
     );
 
-    return response.data.candidates?.[0]?.content?.[0]?.text || "I have nothing to say.";
+    return response.data.candidates?.[0]?.output || "I have nothing to say.";
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
     return "Something broke. Not my fault.";
