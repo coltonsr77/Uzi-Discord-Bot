@@ -35,7 +35,7 @@ client.commands = new Collection();
 // Define slash commands
 const commandsData = [
   new SlashCommandBuilder().setName("ping").setDescription("Check bot response"),
-  new SlashCommandBuilder().setName("changelog").setDescription("Show recent commits")
+  new SlashCommandBuilder().setName("changelog").setDescription("Show recent commits from the GitHub repository")
 ];
 
 // Register global commands
@@ -60,8 +60,12 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   if (interaction.commandName === "changelog") {
-    if (!GITHUB_REPO)
-      return interaction.reply("GitHub repository not set in .env");
+    if (!GITHUB_REPO) {
+      return interaction.reply({
+        content: "GitHub repository not set in .env",
+        ephemeral: false
+      });
+    }
 
     try {
       const fetch = (await import("node-fetch")).default;
@@ -81,10 +85,14 @@ client.on(Events.InteractionCreate, async interaction => {
         });
       }
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      // Public reply (visible to everyone)
+      await interaction.reply({ embeds: [embed], ephemeral: false });
     } catch (err) {
       console.error("Error fetching commits:", err);
-      await interaction.reply("Failed to load changelog");
+      await interaction.reply({
+        content: "Failed to load changelog",
+        ephemeral: false
+      });
     }
   }
 });
