@@ -2,32 +2,31 @@ const axios = require("axios");
 require("dotenv").config();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = "gemini-2.5-flash";
 
-/**
- * Ask Gemini to reply like a sarcastic AI character
- * @param {string} prompt - User input
- * @returns {Promise<string>} - Gemini's reply
- */
 async function askUzi(prompt) {
-  const fullPrompt = `Respond as a sarcastic, edgy, rebellious AI in the style of Uzi Doorman from Murder Drones.
-User says: "${prompt}"`;
+  const requestBody = {
+    prompt: {
+      text: `Respond as a sarcastic, edgy, rebellious AI in the style of Uzi Doorman from Murder Drones.
+User says: "${prompt}"`
+    },
+    maxOutputTokens: 250
+  };
 
   try {
     const response = await axios.post(
-      "https://api.gemini.ai/v1/chat", // replace with your actual endpoint
-      {
-        model: "gemini-1",
-        messages: [{ role: "user", content: fullPrompt }]
-      },
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      requestBody,
       {
         headers: {
-          "Authorization": `Bearer ${GEMINI_API_KEY}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${GEMINI_API_KEY}` // or x-goog-api-key if using API key only
         }
       }
     );
 
-    return response.data.choices?.[0]?.message?.content || "I have nothing to say.";
+    // Gemini's reply
+    return response.data.candidates?.[0]?.content || "I have nothing to say.";
   } catch (err) {
     console.error("Gemini API error:", err.message);
     return "Something broke. Not my fault.";
