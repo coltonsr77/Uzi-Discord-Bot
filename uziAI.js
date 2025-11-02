@@ -16,7 +16,7 @@ async function askUzi(userMessage) {
 
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateText`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
       body,
       {
         headers: {
