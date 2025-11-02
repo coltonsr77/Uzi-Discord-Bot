@@ -7,11 +7,11 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-// Slash commands
+// Slash command
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
-    .setDescription("Talk to the bot in Uzi-inspired style")
+    .setDescription("Talk to the bot as Uzi Doorman")
     .addStringOption(option =>
       option.setName("message")
         .setDescription("Your message to Uzi")
@@ -41,7 +41,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
   if (interaction.commandName === "roleplay") {
     const userMsg = interaction.options.getString("message");
-    await interaction.deferReply(); // gives time for Gemini
+    await interaction.deferReply(); // allows time for AI
     const reply = await askUzi(userMsg);
     await interaction.editReply(reply);
   }
