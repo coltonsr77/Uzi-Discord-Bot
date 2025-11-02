@@ -2,7 +2,7 @@ const axios = require("axios");
 require("dotenv").config();
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL_NAME = "gemini-2.5-flash"; // confirm this is available for your project
+const MODEL_NAME = "gemini-2.5-flash"; // make sure this model exists
 
 async function askUzi(promptText) {
   const body = {
@@ -12,7 +12,7 @@ async function askUzi(promptText) {
         role: "user",
         parts: [
           {
-            text: `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and in a snarky tone. Respond to the user message exactly: "${promptText}"`
+            text: `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and snarkily. Reply to the user message exactly: "${promptText}"`
           }
         ]
       }
@@ -35,12 +35,33 @@ async function askUzi(promptText) {
       }
     );
 
-    // Return Gemini's text exactly
-    return response.data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    // Extract Gemini response
+    let replyText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    // Fallback if empty
+    if (!replyText || replyText.trim() === "") {
+      replyText = getFallbackUziReply(promptText);
+    }
+
+    return replyText;
+
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Error: Gemini failed to respond.";
+    return getFallbackUziReply(promptText);
   }
+}
+
+// Minimal fallback Uzi replies
+function getFallbackUziReply(userMsg) {
+  const fallbackReplies = [
+    `Oh great, another human says: "${userMsg}". How thrilling.`,
+    `Ugh… really? "${userMsg}"? Fine, whatever.`,
+    `Hmph. "${userMsg}"… could be worse, I guess.`,
+    `You expect me to care about: "${userMsg}"? Nope.`
+  ];
+
+  // Randomize fallback
+  return fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)];
 }
 
 module.exports = { askUzi };
