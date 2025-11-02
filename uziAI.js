@@ -1,37 +1,42 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = "gemini-2.5";
+const API_KEY = process.env.GEMINI_API_KEY;
+const MODEL_NAME = "gemini-2.5-flash";  // must match one from docs
 
-async function askUzi(userMessage) {
+async function askUzi(promptText) {
   const body = {
-    model: MODEL,
-    prompt: {
-      text: `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and in a snarky tone. Respond to: "${userMessage}"`
-    },
-    temperature: 0.7,
-    maxOutputTokens: 250
+    model: `models/${MODEL_NAME}`,
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: `You are Uzi Doorman from Murder Drones. Respond sarcastically to: "${promptText}"` }
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 250
+    }
   };
 
   try {
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+    const resp = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`,
       body,
       {
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_API_KEY
+          "x-goog-api-key": API_KEY
         }
       }
     );
-
-    // Extract the generated text
-    const text = response.data?.candidates?.[0]?.output?.[0]?.content?.[0]?.text;
-    return text ? `Uzi Doorman says: ${text}` : "Uzi Doorman is silent…";
+    const replyText = resp.data.candidates?.[0]?.content?.parts?.[0]?.text;
+    return replyText || "Uzi Doorman is silent…";
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Uzi Doorman grumbles: Something broke… not my problem.";
+    return "Uzi Doorman grumbles: Something broke…";
   }
 }
 
