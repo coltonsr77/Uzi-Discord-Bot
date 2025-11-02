@@ -12,8 +12,7 @@ async function askUzi(userMessage) {
         role: "user",
         parts: [
           {
-            text:
-              `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and in a snarky tone like Uzi. Respond to the human: "${userMessage}"`
+            text: `You are Uzi Doorman from Murder Drones. Speak sarcastically, rebelliously, and in a snarky, edgy tone. Respond to this message: "${userMessage}"`
           }
         ]
       }
@@ -36,11 +35,14 @@ async function askUzi(userMessage) {
       }
     );
 
-    const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
-    return text || "I have nothing to say.";
+    // Extract Gemini's text
+    const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    // Return it framed as Uzi Doorman
+    return text ? `Uzi Doorman says: ${text}` : "Uzi Doorman is silent…";
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Ugh… something broke. Not my problem.";
+    return "Uzi Doorman grumbles: Something broke… not my problem.";
   }
 }
 
