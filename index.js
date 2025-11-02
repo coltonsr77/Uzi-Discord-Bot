@@ -7,15 +7,15 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-// Commands
+// Slash commands
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
     .setDescription("Talk to the bot in Uzi-inspired style")
-    .addStringOption(option => option
-      .setName("message")
-      .setDescription("Your message to Uzi")
-      .setRequired(true))
+    .addStringOption(option =>
+      option.setName("message")
+        .setDescription("Your message to Uzi")
+        .setRequired(true))
 ].map(cmd => cmd.toJSON());
 
 // Register commands
@@ -29,19 +29,19 @@ async function registerCommands() {
   }
 }
 
-// Event: ready
+// Ready
 client.once(Events.ClientReady, async () => {
   console.log(`Logged in as ${client.user.tag}`);
   await registerCommands();
 });
 
-// Event: interaction
+// Interaction
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "roleplay") {
     const userMsg = interaction.options.getString("message");
-    await interaction.deferReply(); // allows time for AI response
+    await interaction.deferReply(); // gives time for Gemini
     const reply = await askUzi(userMsg);
     await interaction.editReply(reply);
   }
