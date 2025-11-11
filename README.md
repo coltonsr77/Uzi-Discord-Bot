@@ -9,14 +9,9 @@ Uzi-Doorman-Bot is a small, focused Discord bot that role-plays as Uzi Doorman (
 ## Slash Commands
 These commands are implemented and registered by index.js on startup:
 
-- `/commands` — Lists all available bot commands (ephemeral reply)
-- `/status` — Shows the current bot status (ephemeral reply)
-- `/update` — Owner-only. Updates the bot status. Usage: `/update status:<text>`
-- `/updatecheck` — Checks the latest GitHub release for the repository configured in GITHUB_REPO (ephemeral reply)
-- `/checkservers` — Owner-only. Sends the owner a DM listing all servers the bot is in
+- `/roleplay` — Allows users to roleplay with the bot
 
 Notes:
-- Owner-only commands check the OWNER_ID environment variable.
 - Global slash commands are registered using the CLIENT_ID and DISCORD_TOKEN.
 
 ## Environment Variables
@@ -65,7 +60,7 @@ On startup the bot will:
 - Set the initial activity to "Online" and log startup events to the console
 
 ## Requirements
-- Node.js 22+ (recommended). The code uses dynamic import and modern APIs that work reliably on Node 18 and newer.
+- Node.js 22+ (recommended). The code uses dynamic import and modern APIs that work reliably on Node 18 and newer but tested on 22+
 
 ## Behavior Details / Implementation Notes
 - The bot uses discord.js and registers global slash commands using REST + Routes.applicationCommands(CLIENT_ID).
