@@ -2,7 +2,7 @@ const axios = require("axios");
 require("dotenv").config();
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL_NAME = "gemini-2.5-flash"; // make sure this model exists
+const MODEL_NAME = "gemini-2.5-pro"; // make sure this model exists
 
 async function askUzi(promptText) {
   const body = {
