@@ -1,6 +1,6 @@
 # Uzi-Doorman-Bot
 
-Uzi-Doorman-Bot is a small, focused Discord bot that role-plays as Uzi Doorman (from Murder Drones).
+Uzi-Doorman-Bot is a small, focused Discord bot that roleplays as Uzi Doorman (from Murder Drones).
 
 ## Key Features
 - Roleplay responses inspired by Uzi Doorman
@@ -20,7 +20,7 @@ Create a `.env` file (copy from `.env.example`) and set these values:
 - DISCORD_TOKEN=<your-bot-token>         # required
 - CLIENT_ID=<your-application-client-id> # required (used to register global slash commands)
 - OWNER_ID=<your-user-id>                # required for owner-only commands
-- GITHUB_REPO=<owner/repo>               # optional; used by `/updatecheck` (example: coltonsr77/Uzi-Discord-Bot)
+- GITHUB_REPO=<owner/repo>               # optional (example: coltonsr77/Uzi-Discord-Bot)
 
 Example `.env` (do not commit secrets):
 ```env
@@ -64,20 +64,14 @@ On startup the bot will:
 
 ## Behavior Details / Implementation Notes
 - The bot uses discord.js and registers global slash commands using REST + Routes.applicationCommands(CLIENT_ID).
-- `/updatecheck` calls the GitHub releases API for the value in GITHUB_REPO; set that env var if you want the feature to work.
 - Owner-only commands compare interaction.user.id to OWNER_ID.
-- `/checkservers` attempts to DM the owner a formatted list of guild names, IDs, and member counts. If the DM fails, the bot replies ephemerally with an error.
 
 ## Troubleshooting
 - "Invalid token" on login — verify DISCORD_TOKEN.
 - Commands not appearing — ensure CLIENT_ID is set and the bot has permissions; the bot registers global commands on startup (may take up to an hour to appear across all guilds due to Discord propagation).
-- `/updatecheck` returns "GitHub repo not set." — add GITHUB_REPO to `.env`.
-- Can't DM owner — ensure the owner's privacy settings allow server members (or the bot) to DM them.
 
 ## Contributing
 Contributions, issues, and pull requests are welcome. For quick help or discussion you can join the project's Discord server: https://discord.gg/Rm4QAxfR
-
-If you change commands or environment names in code, please update this README to match.
 
 ## License
 MIT License — feel free to use and modify as needed.
