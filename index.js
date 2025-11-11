@@ -14,7 +14,7 @@ const commandsData = [
     .setDescription("Talk to Uzi Doorman")
     .addStringOption(option =>
       option.setName("message")
-        .setDescription("Your message to Uzi")
+        .setDescription("Your message to Uzi Doorman")
         .setRequired(true))
 ].map(cmd => cmd.toJSON());
 
