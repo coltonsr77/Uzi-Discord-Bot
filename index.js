@@ -11,7 +11,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
-    .setDescription("Talk to Uzi Doorman")
+    .setDescription("Talk to Uzi Doorman WIP")
     .addStringOption(option =>
       option.setName("message")
         .setDescription("Your message to Uzi Doorman")
