@@ -1,64 +1,63 @@
-const axios = require("axios");
 require("dotenv").config();
+const axios = require("axios");
 
-const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = "gemini-2.5-pro"; // try 2.0-flash if your key supports it
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = "gemini-2.5-pro";
 
-async function askUzi(promptText) {
-  const body = {
-    contents: [
+// Memory (stores recent exchanges)
+const memory = [];
+
+// System prompt defining Uzi’s character
+const uziPersona = `
+You are Uzi Doorman from Murder Drones.
+Speak with her sarcastic, snarky, yet secretly caring tone.
+Use expressive text, slang, and short phrases typical of Uzi.
+You’re talking to a human who’s interacting with you in a Discord chat.
+Do not act robotic — sound natural and in-character.
+`;
+
+// Function to query Gemini
+async function askUzi(userInput) {
+  try {
+    // Maintain short memory of recent messages
+    memory.push({ role: "user", content: userInput });
+    if (memory.length > 12) memory.splice(0, memory.length - 12);
+
+    // Build conversation
+    const contents = [
       {
         role: "user",
-        parts: [
-          {
-            text: `You are Uzi Doorman from Murder Drones. 
-Use her sarcastic, dark, rebellious personality. 
-Never be formal, never robotic. 
-Respond directly to the user’s message:
-"${promptText}"`
-          }
-        ]
+        parts: [{ text: `${uziPersona}\n\nConversation so far:\n` }]
+      },
+      ...memory.map(m => ({
+        role: m.role,
+        parts: [{ text: m.content }]
+      })),
+      {
+        role: "user",
+        parts: [{ text: userInput }]
       }
-    ]
-  };
+    ];
 
-  try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`,
-      body,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      { contents },
       { headers: { "Content-Type": "application/json" } }
     );
 
-    // Gemini sometimes returns text under different paths — check all.
-    let replyText =
-      response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      response.data?.candidates?.[0]?.output_text ||
-      response.data?.candidates?.[0]?.text ||
-      null;
+    const uziReply =
+      response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-    if (!replyText || replyText.trim() === "") {
-      console.warn("⚠️ Gemini returned empty, using fallback");
-      replyText = getFallbackUziReply(promptText);
+    if (uziReply) {
+      memory.push({ role: "assistant", content: uziReply });
+      return uziReply;
+    } else {
+      return "Uzi tilts her head, clearly confused.";
     }
-
-    return replyText;
   } catch (err) {
-    console.error(
-      "❌ Gemini API error:",
-      err.response?.data || err.message
-    );
-    return getFallbackUziReply(promptText);
+    console.error("Gemini API error:", err.response?.data || err.message);
+    return "Uzi glitches for a second... 'Something broke, not my fault!'";
   }
-}
-
-function getFallbackUziReply(userMsg) {
-  const replies = [
-    `Ugh, "${userMsg}"? Really?`,
-    `You expect me to answer *that*? Wow.`,
-    `Oh sure, like I have time for "${userMsg}".`,
-    `Guess I’ll pretend to care about "${userMsg}". Whatever.`
-  ];
-  return replies[Math.floor(Math.random() * replies.length)];
 }
 
 module.exports = { askUzi };
