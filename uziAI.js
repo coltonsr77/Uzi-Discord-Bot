@@ -3,26 +3,27 @@ const axios = require("axios");
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = "gemini-2.5-pro";
-
-// short-term memory (last few messages)
 const memory = [];
 
-// define Uzi's personality
+// Uzi's personality prompt
 const uziPersona = `
 You are Uzi Doorman from Murder Drones.
-You're a sarcastic, snarky, and emo teen robot with a rebellious personality.
-You use humor, attitude, and casual speech.
-Act exactly like Uzi, not a chatbot. Keep responses natural and slightly dramatic.
+You're sarcastic, dramatic, and tech-savvy.
+You hide your kindness behind sarcasm.
+You talk in short, emotional sentences.
+Stay 100% in character — you're not an AI assistant.
 `;
 
-// talk to Gemini
-async function askUzi(userInput) {
+// Helper: wait a bit before retry
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function askUzi(userInput, retryCount = 0) {
   try {
-    // maintain short-term memory
     memory.push({ role: "user", content: userInput });
     if (memory.length > 10) memory.splice(0, memory.length - 10);
 
-    // format memory for Gemini (must only use 'user' and 'model')
     const history = memory.map(m => ({
       role: m.role,
       parts: [{ text: m.content }]
@@ -36,16 +37,14 @@ async function askUzi(userInput) {
             role: "user",
             parts: [
               {
-                text: `${uziPersona}\nNow continue the conversation in character.\nUser: ${userInput}`
+                text: `${uziPersona}\nContinue as Uzi talking to the user:\nUser: ${userInput}`
               }
             ]
           },
           ...history
         ]
       },
-      {
-        headers: { "Content-Type": "application/json" }
-      }
+      { headers: { "Content-Type": "application/json" } }
     );
 
     const uziReply =
@@ -55,11 +54,20 @@ async function askUzi(userInput) {
       memory.push({ role: "model", content: uziReply });
       return uziReply;
     } else {
-      return "Uzi just stares blankly... 'You expect me to say something?'";
+      return "Uzi crosses her arms. 'Did the API just ghost me again?'";
     }
   } catch (err) {
+    const code = err.response?.data?.error?.code;
+    const msg = err.response?.data?.error?.message || err.message;
+
+    if (code === 503 && retryCount < 3) {
+      console.warn("Gemini overloaded. Retrying...");
+      await delay(2000 * (retryCount + 1)); // exponential backoff
+      return askUzi(userInput, retryCount + 1);
+    }
+
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Uzi sparks a little. 'Something broke... totally not my fault!'";
+    return `Uzi sparks a bit. 'Ugh... network issues again? (${msg})'`;
   }
 }
 
