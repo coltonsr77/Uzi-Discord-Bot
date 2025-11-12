@@ -2,52 +2,61 @@ const axios = require("axios");
 require("dotenv").config();
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = "gemini-2.5-pro"; // or gemini-2.0-flash if your account supports it
+const MODEL = "gemini-2.5-pro"; // try 2.0-flash if your key supports it
 
 async function askUzi(promptText) {
   const body = {
     contents: [
       {
         role: "user",
-        parts: [{ text: `You are Uzi Doorman from Murder Drones. 
-Speak sarcastically, dramatic, and edgy like in the show. 
-Reply to the user directly with personality.
-User said: "${promptText}"` }]
+        parts: [
+          {
+            text: `You are Uzi Doorman from Murder Drones. 
+Use her sarcastic, dark, rebellious personality. 
+Never be formal, never robotic. 
+Respond directly to the user’s message:
+"${promptText}"`
+          }
+        ]
       }
-    ],
-    generationConfig: {
-      temperature: 0.8,
-      maxOutputTokens: 256
-    }
+    ]
   };
 
   try {
-    const res = await axios.post(
+    const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`,
       body,
       { headers: { "Content-Type": "application/json" } }
     );
 
-    let replyText = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    // Gemini sometimes returns text under different paths — check all.
+    let replyText =
+      response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      response.data?.candidates?.[0]?.output_text ||
+      response.data?.candidates?.[0]?.text ||
+      null;
 
     if (!replyText || replyText.trim() === "") {
+      console.warn("⚠️ Gemini returned empty, using fallback");
       replyText = getFallbackUziReply(promptText);
-      console.warn("⚠️ Gemini returned empty; using fallback.");
     }
 
     return replyText;
   } catch (err) {
-    console.error("❌ Gemini API error:", err.response?.data || err.message);
+    console.error(
+      "❌ Gemini API error:",
+      err.response?.data || err.message
+    );
     return getFallbackUziReply(promptText);
   }
 }
 
 function getFallbackUziReply(userMsg) {
   const replies = [
-    `Ugh... "${userMsg}"? Seriously?`,
-    `Oh wow, another *genius* input: "${userMsg}".`,
-    `You expect me to answer *that*? Fine. "${userMsg}", whatever.`,
-    `Guess I’ll pretend to care about "${userMsg}".`
+    `Ugh, "${userMsg}"? Really?`,
+    `You expect me to answer *that*? Wow.`,
+    `Oh sure, like I have time for "${userMsg}".`,
+    `Guess I’ll pretend to care about "${userMsg}". Whatever.`
   ];
   return replies[Math.floor(Math.random() * replies.length)];
 }
