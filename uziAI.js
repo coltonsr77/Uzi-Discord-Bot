@@ -4,59 +4,62 @@ const axios = require("axios");
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = "gemini-2.5-pro";
 
-// Memory (stores recent exchanges)
+// short-term memory (last few messages)
 const memory = [];
 
-// System prompt defining Uzi’s character
+// define Uzi's personality
 const uziPersona = `
 You are Uzi Doorman from Murder Drones.
-Speak with her sarcastic, snarky, yet secretly caring tone.
-Use expressive text, slang, and short phrases typical of Uzi.
-You’re talking to a human who’s interacting with you in a Discord chat.
-Do not act robotic — sound natural and in-character.
+You're a sarcastic, snarky, and emo teen robot with a rebellious personality.
+You use humor, attitude, and casual speech.
+Act exactly like Uzi, not a chatbot. Keep responses natural and slightly dramatic.
 `;
 
-// Function to query Gemini
+// talk to Gemini
 async function askUzi(userInput) {
   try {
-    // Maintain short memory of recent messages
+    // maintain short-term memory
     memory.push({ role: "user", content: userInput });
-    if (memory.length > 12) memory.splice(0, memory.length - 12);
+    if (memory.length > 10) memory.splice(0, memory.length - 10);
 
-    // Build conversation
-    const contents = [
-      {
-        role: "user",
-        parts: [{ text: `${uziPersona}\n\nConversation so far:\n` }]
-      },
-      ...memory.map(m => ({
-        role: m.role,
-        parts: [{ text: m.content }]
-      })),
-      {
-        role: "user",
-        parts: [{ text: userInput }]
-      }
-    ];
+    // format memory for Gemini (must only use 'user' and 'model')
+    const history = memory.map(m => ({
+      role: m.role,
+      parts: [{ text: m.content }]
+    }));
 
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      { contents },
-      { headers: { "Content-Type": "application/json" } }
+      {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `${uziPersona}\nNow continue the conversation in character.\nUser: ${userInput}`
+              }
+            ]
+          },
+          ...history
+        ]
+      },
+      {
+        headers: { "Content-Type": "application/json" }
+      }
     );
 
     const uziReply =
       response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
     if (uziReply) {
-      memory.push({ role: "assistant", content: uziReply });
+      memory.push({ role: "model", content: uziReply });
       return uziReply;
     } else {
-      return "Uzi tilts her head, clearly confused.";
+      return "Uzi just stares blankly... 'You expect me to say something?'";
     }
   } catch (err) {
     console.error("Gemini API error:", err.response?.data || err.message);
-    return "Uzi glitches for a second... 'Something broke, not my fault!'";
+    return "Uzi sparks a little. 'Something broke... totally not my fault!'";
   }
 }
 
