@@ -29,7 +29,7 @@ const client = new Client({
 const commandsData = [
   new SlashCommandBuilder()
     .setName("roleplay")
-    .setDescription("Talk to Uzi Doorman (WIP)")
+    .setDescription("Talk to Uzi Doorman")
     .addStringOption(option =>
       option
         .setName("message")
@@ -47,7 +47,7 @@ async function registerCommands() {
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData
     });
-    console.log("✅ Commands registered globally");
+    console.log("Commands registered globally");
   } catch (err) {
     console.error("Command registration failed:", err);
   }
