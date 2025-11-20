@@ -19,16 +19,11 @@ Create a `.env` file (copy from `.env.example`) and set these values:
 
 - DISCORD_TOKEN=<your-bot-token>         # required
 - CLIENT_ID=<your-application-client-id> # required (used to register global slash commands)
-- OWNER_ID=<your-user-id>                # required for owner-only commands
-- GITHUB_REPO=<owner/repo>               # optional (example: coltonsr77/Uzi-Discord-Bot)
 
 Example `.env` (do not commit secrets):
 ```env
 DISCORD_TOKEN=your_token_here
 CLIENT_ID=123456789012345678
-OWNER_ID=987654321098765432
-GITHUB_REPO=coltonsr77/Uzi-Discord-Bot
-```
 
 ## Installation
 
