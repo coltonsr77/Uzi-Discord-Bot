@@ -42,7 +42,7 @@ const commandsData = [
 // Command Registration
 // ---------------------
 async function registerCommands() {
-  const rest = new REST({ version: "10" }).setToken(DSICORD_TOKEN);
+  const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
   try {
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData
