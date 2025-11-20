@@ -117,4 +117,4 @@ client.on(Events.MessageCreate, async (message) => {
 // ---------------------
 // Login
 // ---------------------
-client.login(TOKEN);
+client.login(DISCORD_TOKEN);
