@@ -10,7 +10,7 @@ const {
 } = require("discord.js");
 const { askUzi } = require("./uziAI");
 
-const TOKEN = process.env.TOKEN;
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
 // Create client with message content intents for mentions
@@ -42,7 +42,7 @@ const commandsData = [
 // Command Registration
 // ---------------------
 async function registerCommands() {
-  const rest = new REST({ version: "10" }).setToken(TOKEN);
+  const rest = new REST({ version: "10" }).setToken(DSICORD_TOKEN);
   try {
     await rest.put(Routes.applicationCommands(CLIENT_ID), {
       body: commandsData
